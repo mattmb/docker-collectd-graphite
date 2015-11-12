@@ -17,14 +17,18 @@ RUN apt-get update && \
 RUN adduser --system --group --no-create-home collectd && \
     adduser --system --group --no-create-home statsd
 
-# Install StatsD
+# Install StatsD and configure
 RUN mkdir -p /src && \
     git clone https://github.com/etsy/statsd.git /src/statsd && \
     cd /src/statsd &&\
     git checkout v0.7.2
-
-# Confiure StatsD
 COPY statsd/config.js /src/statsd/config.js
+
+#Configure collectd
+COPY collectd/collectd.conf /etc/collectd/collectd.conf
+RUN mkdir /var/log/collectd && \
+    chown -R collectd /var/log/collectd && \
+    chown -R collectd /var/lib/collectd
 
 # Configure graphite
 COPY graphite/local_settings.py /etc/graphite/local_settings.py
@@ -35,29 +39,20 @@ COPY graphite/storage-aggregation.conf /etc/carbon/storage-aggregation.conf
 COPY graphite/database.json /root/database.json
 RUN  python /usr/lib/python2.7/dist-packages/graphite/manage.py syncdb --noinput && \ 
      python /usr/lib/python2.7/dist-packages/graphite/manage.py loaddata /root/database.json
-
 #Carbon runs as www-data and needs write permission
 #Graphite runs as _graphite
 RUN   chown -R _graphite:www-data /var/lib/graphite && \ 
-      chmod -R ugo+w /var/lib/graphite
+      chmod -R ug+w /var/lib/graphite
 
 RUN a2dissite 000-default && \
     cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-available && \
     a2ensite apache2-graphite
 
-#Configure collectd
-COPY collectd/collectd.conf /etc/collectd/collectd.conf
-
 #Configure supervisor 
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir -p /var/log/supervisor
 
-RUN mkdir /var/log/collectd && \
-    chown -R collectd /var/log/collectd && \
-#    mkdir /var/lib/collectd && \
-    chown -R collectd /var/lib/collectd
-
-VOLUME ["/var/lib/graphite/"]
+VOLUME ["/var/lib/graphite/", "/var/lib/collectd"]
 
 EXPOSE 80
 
