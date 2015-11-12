@@ -12,7 +12,7 @@
 FROM ubuntu:14.04
 
 RUN apt-get update && \
-    apt-get install -y graphite-web graphite-carbon apache2 libapache2-mod-wsgi supervisor collectd collectd-utils git nodejs
+    apt-get install -y graphite-web graphite-carbon apache2 libapache2-mod-wsgi supervisor collectd collectd-utils git nodejs wget
 
 RUN adduser --system --group --no-create-home collectd && \
     adduser --system --group --no-create-home statsd
@@ -48,12 +48,20 @@ RUN a2dissite 000-default && \
     cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-available && \
     a2ensite apache2-graphite
 
+#Configure grafana
+RUN mkdir /src/grafana                                                                                    &&\
+    mkdir /opt/grafana                                                                                    &&\
+    wget https://grafanarel.s3.amazonaws.com/builds/grafana-2.1.3.linux-x64.tar.gz -O /src/grafana.tar.gz &&\
+    tar -xzf /src/grafana.tar.gz -C /opt/grafana --strip-components=1                                     &&\
+    rm /src/grafana.tar.gz
+COPY ./grafana/custom.ini /opt/grafana/conf/custom.ini
+
 #Configure supervisor 
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir -p /var/log/supervisor
 
 VOLUME ["/var/lib/graphite/", "/var/lib/collectd"]
 
-EXPOSE 80
+EXPOSE 80 3000
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
