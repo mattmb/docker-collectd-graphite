@@ -4,6 +4,7 @@ Docker image with collectd and statsd to collect metrics and graphite as the sto
 ## Exposed ports
 
 The following ports are exposed by this image:
+
 | port  | description            |
 | -----:| ---------------------- |
 | 80    | grafana                |
