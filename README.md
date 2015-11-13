@@ -54,3 +54,13 @@ sudo docker create \
        docker.clarin.eu/metrics:1.0.0
 sudo docker start metrics
 ```
+
+## Finalize setup
+
+When the container is succesfully running your `docker ps` should look similar to the following output:
+```
+CONTAINER ID        IMAGE                                              COMMAND                  CREATED             STATUS              PORTS                                                                                                            NAMES
+f34c46c549a8        docker.clarin.eu/metrics:1.0.0                     "/usr/bin/supervisord"   51 minutes ago      Up 51 minutes       80/tcp, 8125-8126/tcp, 0.0.0.0:8125->8125/udp, 25826/tcp, 172.17.42.1:3000->3000/tcp, 0.0.0.0:25826->25826/udp   metrics
+```
+
+Now login to your server (admin:admin) and changes you admin credentials!
