@@ -62,6 +62,6 @@ RUN mkdir -p /var/log/supervisor
 
 VOLUME ["/var/lib/graphite/", "/var/lib/collectd"]
 
-EXPOSE 80 3000 25826
+EXPOSE 80 3000 8125 8126 25826
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
