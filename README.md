@@ -7,11 +7,11 @@ The following ports are exposed by this image:
 
 | port  | description            |
 | -----:| ---------------------- |
-| 80    | grafana                |
-| 3000  | graphite-web           |
+| 80    | graphite-web           |
+| 3000  | grafana                |
 | 8125  | statsd port            |
 | 8126  | statsd management port |
 | 25826 | collectd port          |
 
 The collectd and statsd ports should be externally available to allow external services to report statistics.
-In order to expose the userinterface you can expose port 80 or proxy to the desired port.
+In order to expose the userinterface we advise to proxy to the desired port, 3000 for the grafana UI preferably.
