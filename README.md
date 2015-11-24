@@ -26,6 +26,7 @@ sudo docker create \
        docker.clarin.eu/metrics:1.0.0
 # Create container running the stack
 sudo docker create \
+       --restart=always \
        --name metrics \
        --volumes-from metrics_data \
        -p 172.17.42.1:3000:3000 \
@@ -46,6 +47,7 @@ sudo docker restart metrics
 sudo docker stop metrics
 sudo docker rm metrics
 sudo docker create \
+       --restart=always \
        --name metrics \
        --volumes-from metrics_data \
        -p 172.17.42.1:3000:3000 \
@@ -63,4 +65,4 @@ CONTAINER ID        IMAGE                                              COMMAND  
 f34c46c549a8        docker.clarin.eu/metrics:1.0.0                     "/usr/bin/supervisord"   51 minutes ago      Up 51 minutes       80/tcp, 8125-8126/tcp, 0.0.0.0:8125->8125/udp, 25826/tcp, 172.17.42.1:3000->3000/tcp, 0.0.0.0:25826->25826/udp   metrics
 ```
 
-Now login to your server (admin:admin) and changes you admin credentials!
+Now login to your server (admin:admin) and change you admin credentials!
