@@ -59,7 +59,7 @@ RUN a2dissite 000-default                                                       
 #####################
 RUN mkdir /src/grafana                                                                                    &&\
     mkdir /opt/grafana                                                                                    &&\
-    wget https://grafanarel.s3.amazonaws.com/builds/grafana-2.1.3.linux-x64.tar.gz -O /src/grafana.tar.gz &&\
+    wget https://grafanarel.s3.amazonaws.com/builds/grafana-2.6.0.linux-x64.tar.gz -O /src/grafana.tar.gz &&\
     tar -xzf /src/grafana.tar.gz -C /opt/grafana --strip-components=1                                     &&\
     rm /src/grafana.tar.gz
 COPY ./grafana/custom.ini /opt/grafana/conf/custom.ini
@@ -74,7 +74,7 @@ RUN mkdir -p /var/lib/grafana/ && \
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir -p /var/log/supervisor
 
-VOLUME ["/var/lib/graphite/", "/var/lib/collectd", "/var/lib/grafana", "/var/lib/grafana-dashboards"]
+VOLUME ["/var/lib/graphite/", "/var/lib/collectd", "/var/log/supervisor", "/var/log/collectd", "/var/log/graphite", "/var/log/carbon"]
 
 EXPOSE 80 3000 8125 8126 25826
 
