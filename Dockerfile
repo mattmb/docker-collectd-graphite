@@ -15,7 +15,7 @@ ENV APACHE_RUN_USER=_graphite
 ENV APACHE_RUN_GROUP=_graphite
 
 RUN apt-get update && \
-    apt-get install -y graphite-web graphite-carbon apache2 libapache2-mod-wsgi supervisor collectd collectd-utils git nodejs wget
+    apt-get install -y graphite-web graphite-carbon apache2 libapache2-mod-wsgi supervisor git nodejs wget
 
 ################################
 # Install StatsD and configure #
@@ -25,11 +25,6 @@ RUN mkdir -p /src                                           && \
     cd /src/statsd &&\
     git checkout v0.7.2
 COPY statsd/config.js /src/statsd/config.js
-
-################################
-# Configure collectd           #
-################################
-COPY collectd/collectd.conf /etc/collectd/collectd.conf
 
 ################################
 # Configure graphite           #
@@ -73,17 +68,13 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # directories and update all permission                #
 ########################################################
 
-RUN adduser --system --group --no-create-home collectd \
- && adduser --system --group --no-create-home statsd \
- && mkdir /var/log/collectd \
+RUN adduser --system --group --no-create-home statsd \
  && mkdir /var/log/grafana \
  && mkdir -p /var/log/supervisor \
  && mkdir -p /var/lib/grafana/ \
  && mkdir -p /var/run/carbon \
  && mkdir -p /var/run/grafana \
  && mkdir -p /opt/grafana/data/log/ \
- && chown -R collectd /var/log/collectd \
- && chown -R collectd /var/lib/collectd \
  && chown -R statsd /src/statsd \
  && chown -R _graphite /var/lib/grafana \
  && chown -R _graphite /var/log/grafana \
@@ -96,6 +87,8 @@ RUN adduser --system --group --no-create-home collectd \
 # Expose volumes, ports and    #
 # set container command        #
 ################################
-VOLUME ["/var/lib/graphite/", "/var/lib/collectd", "/var/log/supervisor", "/var/log/collectd", "/var/log/graphite", "/var/log/carbon"]
-EXPOSE 80 3000 8125 8126 25826
+VOLUME ["/var/lib/grafana", "/var/lib/graphite/", "/var/log/supervisor", "/var/log/graphite", "/var/log/carbon"]
+EXPOSE 80 3000 8125 8126 25826 2003
+COPY entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
